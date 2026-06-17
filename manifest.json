@@ -1,0 +1,17 @@
+{
+  "name": "Chain — Habit Tracker",
+  "short_name": "Chain",
+  "description": "A minimal, offline-first habit tracker built around the don't-break-the-chain method.",
+  "id": "/",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#E7ECEA",
+  "theme_color": "#20262B",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
