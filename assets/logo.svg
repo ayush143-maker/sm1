@@ -1,8 +1,10 @@
 <svg viewBox="0 0 320 96" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="chainLogoTitle">
   <title id="chainLogoTitle">Chain — Habit Tracker</title>
-  <g transform="translate(8, 16)">
-    <rect x="0" y="16" width="36" height="32" rx="16" fill="none" stroke="#C98A3D" stroke-width="7"/>
-    <rect x="20" y="16" width="36" height="32" rx="16" fill="none" stroke="#C98A3D" stroke-width="7"/>
+  <g transform="translate(6, 28)">
+    <g fill="none" stroke="#C98A3D" stroke-width="6.6" stroke-linecap="round">
+      <rect x="4.5" y="27.8" width="30" height="16.5" rx="8.25" transform="rotate(-35 19.5 36)"/>
+      <rect x="33" y="27.8" width="30" height="16.5" rx="8.25" transform="rotate(-35 48 36)"/>
+    </g>
   </g>
   <text x="88" y="62" font-family="Georgia, 'Times New Roman', serif" font-size="44" font-weight="700" letter-spacing="-0.5" fill="#20262B">Chain</text>
 </svg>
