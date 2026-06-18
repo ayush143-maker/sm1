@@ -49,6 +49,30 @@
   let habits = loadHabits();
 
   /* ---------------------------------------------------------------
+     XP / leveling
+     +10 XP per habit marked done. Unmarking it removes the same 10 —
+     toggling on and off doesn't farm XP. 100 XP per level, flat.
+     --------------------------------------------------------------- */
+  const XP_STORAGE_KEY = "chain.xp.v1";
+  const XP_PER_TASK = 10;
+  const XP_PER_LEVEL = 100;
+
+  function loadXp() {
+    const raw = Number(localStorage.getItem(XP_STORAGE_KEY));
+    return Number.isFinite(raw) && raw >= 0 ? raw : 0;
+  }
+
+  function saveXp(xp) {
+    try {
+      localStorage.setItem(XP_STORAGE_KEY, String(xp));
+    } catch (err) {
+      console.error("Could not save XP.", err);
+    }
+  }
+
+  let totalXp = loadXp();
+
+  /* ---------------------------------------------------------------
      Streak logic
      A streak counts consecutive completed days ending today.
      If today isn't done yet, the streak still shows the chain built
@@ -65,10 +89,14 @@
     return streak;
   }
 
+  // Returns the last 7 days with TODAY FIRST, then going backward in
+  // time (today, yesterday, 2 days ago, ... 6 days ago). Rendered
+  // left-to-right, that puts today at the left where you actually look
+  // first, with your recent history trailing off to the right.
   function lastSevenDays(habit) {
     const t = today();
     const days = [];
-    for (let i = 6; i >= 0; i -= 1) {
+    for (let i = 0; i <= 6; i += 1) {
       const d = addDays(t, -i);
       days.push({ key: dateKey(d), isToday: i === 0, done: !!habit.log[dateKey(d)] });
     }
@@ -91,9 +119,19 @@
     });
   }
 
+  const xpLabelEl = document.getElementById("xpLabel");
+  const xpBarFillEl = document.getElementById("xpBarFill");
+
+  function renderXp() {
+    const level = Math.floor(totalXp / XP_PER_LEVEL) + 1;
+    const intoLevel = totalXp % XP_PER_LEVEL;
+    xpLabelEl.textContent = `Lv ${level} · ${intoLevel}/${XP_PER_LEVEL} XP`;
+    xpBarFillEl.style.width = `${(intoLevel / XP_PER_LEVEL) * 100}%`;
+  }
+
   function renderChain(container, habit) {
     container.innerHTML = "";
-    const days = lastSevenDays(habit);
+    const days = lastSevenDays(habit); // [today, yesterday, ... 6 days ago]
 
     days.forEach((day, idx) => {
       const dot = document.createElement("span");
@@ -106,12 +144,14 @@
       if (idx < days.length - 1) {
         const link = document.createElement("span");
         link.className = "chain-link";
-        const next = days[idx + 1];
-        if (day.done && next.done) link.classList.add("is-linked");
-        else if (day.done !== next.done && !next.isToday && day.key <= dateKey(today())) {
-          // a link breaks where one side was completed and the other wasn't,
-          // as long as that day has already passed (not just "not yet today")
-          if (!(next.isToday && !next.done)) link.classList.add("is-broken");
+        const older = days[idx + 1]; // one calendar day further into the past
+
+        if (day.done && older.done) {
+          link.classList.add("is-linked");
+        } else if (day.isToday && !day.done) {
+          // today hasn't been decided yet — don't render a verdict on it
+        } else if (day.done !== older.done) {
+          link.classList.add("is-broken");
         }
         container.appendChild(link);
       }
@@ -169,9 +209,15 @@
     const habit = habits.find((h) => h.id === id);
     if (!habit) return;
     const key = dateKey(today());
-    habit.log[key] = !habit.log[key];
+    const wasDone = !!habit.log[key];
+    habit.log[key] = !wasDone;
     if (!habit.log[key]) delete habit.log[key];
     saveHabits(habits);
+
+    totalXp = Math.max(0, totalXp + (wasDone ? -XP_PER_TASK : XP_PER_TASK));
+    saveXp(totalXp);
+    renderXp();
+
     renderHabits();
 
     if (habit.log[key]) {
@@ -179,8 +225,19 @@
       if (refreshed) {
         refreshed.classList.add("just-checked");
         refreshed.addEventListener("animationend", () => refreshed.classList.remove("just-checked"), { once: true });
+        showXpGain(refreshed);
       }
     }
+  }
+
+  function showXpGain(habitCardNode) {
+    const toggleBtn = habitCardNode.querySelector(".habit-card__toggle");
+    const badge = document.createElement("span");
+    badge.className = "xp-gain";
+    badge.textContent = `+${XP_PER_TASK} XP`;
+    badge.setAttribute("aria-hidden", "true");
+    toggleBtn.insertAdjacentElement("afterend", badge);
+    badge.addEventListener("animationend", () => badge.remove(), { once: true });
   }
 
   function deleteHabit(id) {
@@ -287,6 +344,7 @@
      Init
      --------------------------------------------------------------- */
   renderTodayLabel();
+  renderXp();
   updateOnlineStatus();
   renderHabits();
 })();
