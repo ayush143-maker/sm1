@@ -97,13 +97,54 @@ button {
   color: var(--ink);
 }
 
+.app__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 6px 0 0 38px;
+}
+
 .app__date {
   font-family: var(--font-mono);
   font-size: 13px;
   color: var(--ink-soft);
-  margin: 6px 0 0 38px;
+  margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.app__xp {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.app__xp-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--amber-deep);
+  white-space: nowrap;
+}
+
+.xp-bar {
+  width: 56px;
+  height: 5px;
+  background: var(--surface-border);
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.xp-bar__fill {
+  height: 100%;
+  width: 0%;
+  background: var(--amber);
+  border-radius: 999px;
+  transition: width 0.3s ease;
 }
 
 .install-btn {
@@ -129,11 +170,35 @@ button {
 }
 
 .habit-card {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 18px;
+  overflow: hidden;
+}
+
+.xp-gain {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: var(--amber);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  pointer-events: none;
+  animation: xpFloat 900ms ease forwards;
+}
+
+@keyframes xpFloat {
+  0% { opacity: 0; transform: translateY(4px) scale(0.92); }
+  18% { opacity: 1; transform: translateY(0) scale(1); }
+  72% { opacity: 1; transform: translateY(-4px) scale(1); }
+  100% { opacity: 0; transform: translateY(-16px) scale(1); }
 }
 
 .habit-card__top {
