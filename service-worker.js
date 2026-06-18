@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_VERSION = "chain-v1";
+const CACHE_VERSION = "chain-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
